@@ -10,21 +10,22 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.faviansa.dicodingevent.data.response.ListEventsItem
 import com.faviansa.dicodingevent.databinding.FragmentUpcomingBinding
+import com.faviansa.dicodingevent.ui.MainViewModel
 import com.faviansa.dicodingevent.ui.adapter.ListEventAdapter
 
 class UpcomingFragment : Fragment() {
 
     private var _binding: FragmentUpcomingBinding? = null
     private val binding get() = _binding!!
-    private lateinit var upcomingViewModel: UpcomingViewModel
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        upcomingViewModel =
-            ViewModelProvider(this).get(UpcomingViewModel::class.java)
+        mainViewModel =
+            ViewModelProvider(this).get(MainViewModel::class.java)
 
         _binding = FragmentUpcomingBinding.inflate(inflater, container, false)
         return binding.root
@@ -38,12 +39,12 @@ class UpcomingFragment : Fragment() {
         val itemDecoration = DividerItemDecoration(context, layoutManager.orientation)
         binding.rvUpcoming.addItemDecoration(itemDecoration)
 
-        upcomingViewModel.upcomingEvents.observe(viewLifecycleOwner) { listEvents ->
+        mainViewModel.upcomingEvents.observe(viewLifecycleOwner) { listEvents ->
             setEventsData(listEvents)
         }
 
         // Optionally observe loading and error states
-        upcomingViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+        mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
                 binding.progressBar.visibility = View.VISIBLE
             } else {
@@ -51,7 +52,7 @@ class UpcomingFragment : Fragment() {
             }
         }
 
-        upcomingViewModel.error.observe(viewLifecycleOwner) { error ->
+        mainViewModel.error.observe(viewLifecycleOwner) { error ->
 
         }
     }

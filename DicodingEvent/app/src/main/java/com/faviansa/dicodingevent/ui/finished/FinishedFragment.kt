@@ -10,21 +10,22 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.faviansa.dicodingevent.data.response.ListEventsItem
 import com.faviansa.dicodingevent.databinding.FragmentFinishedBinding
+import com.faviansa.dicodingevent.ui.MainViewModel
 import com.faviansa.dicodingevent.ui.adapter.ListEventAdapter
 
 class FinishedFragment : Fragment() {
 
     private var _binding: FragmentFinishedBinding? = null
     private val binding get() = _binding!!
-    private lateinit var finishedViewModel: FinishedViewModel
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        finishedViewModel =
-            ViewModelProvider(this).get(FinishedViewModel::class.java)
+        mainViewModel =
+            ViewModelProvider(this).get(MainViewModel::class.java)
 
         _binding = FragmentFinishedBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -40,11 +41,11 @@ class FinishedFragment : Fragment() {
         val itemDecoration = DividerItemDecoration(context, layoutManager.orientation)
         binding.rvFinished.addItemDecoration(itemDecoration)
 
-        finishedViewModel.finishedEvents.observe(viewLifecycleOwner) { listEvents ->
+        mainViewModel.finishedEvents.observe(viewLifecycleOwner) { listEvents ->
             setEventsData(listEvents)
         }
 
-        finishedViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+        mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
                 binding.progressBar.visibility = View.VISIBLE
             } else {
