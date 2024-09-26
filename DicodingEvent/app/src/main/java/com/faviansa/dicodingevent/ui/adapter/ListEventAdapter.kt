@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.faviansa.dicodingevent.data.response.ListEventsItem
 import com.faviansa.dicodingevent.databinding.ItemCardBinding
-import com.faviansa.dicodingevent.utils.DateFormat.formatDate
+import com.faviansa.dicodingevent.utils.DateFormat.formatCardDate
 
 class ListEventAdapter : ListAdapter<ListEventsItem, ListEventAdapter.MyViewHolder>(DIFF_CALLBACK) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -25,7 +25,7 @@ class ListEventAdapter : ListAdapter<ListEventsItem, ListEventAdapter.MyViewHold
         fun bind(event: ListEventsItem) {
             binding.eventName.text = event.name
             binding.eventPlace.text = event.cityName
-            binding.eventDate.text = event.beginTime?.let { formatDate(it) }
+            binding.eventDate.text = event.beginTime?.let { formatCardDate(it) }
             "${event.registrants}/${event.quota}".also { binding.eventQuota.text = it }
 
             Glide.with(binding.root.context)
