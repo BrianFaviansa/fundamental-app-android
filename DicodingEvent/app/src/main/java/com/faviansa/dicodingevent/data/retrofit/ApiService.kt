@@ -1,7 +1,7 @@
 package com.faviansa.dicodingevent.data.retrofit
 
+import com.faviansa.dicodingevent.data.response.DetailEventResponse
 import com.faviansa.dicodingevent.data.response.EventResponse
-import com.faviansa.dicodingevent.data.response.SpecificEventResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -15,12 +15,10 @@ interface ApiService {
     fun getFinishedEvents(): Call<EventResponse>
 
     @GET("events/{id}")
-    fun getEventDetail(
-        @Path("id") id: String
-    ): Call<SpecificEventResponse>
+    fun getDetailEvent(@Path("id") id: String): Call<DetailEventResponse>
 
     @GET("events")
-    fun searchEvent(
+    fun searchEvents(
         @Query("active") active: Int,
         @Query("q") query: String
     ): Call<EventResponse>

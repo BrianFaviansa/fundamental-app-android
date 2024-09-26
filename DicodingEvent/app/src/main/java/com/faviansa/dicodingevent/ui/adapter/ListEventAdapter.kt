@@ -2,6 +2,7 @@ package com.faviansa.dicodingevent.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +20,18 @@ class ListEventAdapter : ListAdapter<ListEventsItem, ListEventAdapter.MyViewHold
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val event = getItem(position)
         holder.bind(event)
+
+        holder.itemView.setOnClickListener {
+            Toast.makeText(it.context, "Clicked id : ${event.id}, event name : ${event.name}", Toast.LENGTH_SHORT).show()
+//            val navController = it.findNavController()
+//            val action = when(navController.currentDestination?.id) {
+//                R.id.navigation_home -> HomeFragmentDirections.actionHomeFragmentToDetailFragment(event.id.toString())
+//                R.id.navigation_upcoming -> UpcomingFragmentDirections.actionUpcomingFragmentToDetailFragment(event.id.toString())
+//                R.id.navigation_finished -> FinishedFragmentDirections.actionFinishedFragmentToDetailFragment(event.id.toString())
+//                else -> null
+//            }
+//            action?.let { navController.navigate(it) }
+        }
     }
 
     class MyViewHolder(private val binding: ItemCardBinding): RecyclerView.ViewHolder(binding.root) {

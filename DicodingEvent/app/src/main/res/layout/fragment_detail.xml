@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:id="@+id/detailFragment"
+    tools:context=".ui.detail.DetailFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/detailEventImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+             />
+
+        <TextView
+            android:id="@+id/detailEventName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:textSize="21sp"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:text="Event Name"
+            />
+
+        <TextView
+            android:id="@+id/detailEventOwner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:drawableStart="@drawable/baseline_contact_support_24"
+            android:gravity="center_vertical"
+            android:drawablePadding="6dp"
+            android:text="Event Owner"
+            />
+
+        <TextView
+            android:id="@+id/detailEventBeginTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:drawableStart="@drawable/baseline_access_time_filled_24"
+            android:gravity="center_vertical"
+            android:drawablePadding="6dp"
+            android:text="12 September 2024 10:00"
+            />
+
+        <TextView
+            android:id="@+id/detailEventQuota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:drawableStart="@drawable/baseline_people_24"
+            android:gravity="center_vertical"
+            android:drawablePadding="6dp"
+            android:text="100/1000"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:drawableStart="@drawable/baseline_info_24"
+            android:gravity="center_vertical"
+            android:drawablePadding="6dp"
+            android:text="Event Description :"
+            />
+
+        <TextView
+            android:id="@+id/detailEventDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:gravity="center_vertical"
+            android:drawablePadding="6dp"
+            android:text="lorem ipsum dolor sit amet"
+            />
+
+        <Button
+            android:id="@+id/btnEventLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Register"
+            />
+
+    </LinearLayout>
+
+</ScrollView>

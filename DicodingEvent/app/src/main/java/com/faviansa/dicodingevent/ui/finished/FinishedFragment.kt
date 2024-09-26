@@ -36,6 +36,8 @@ class FinishedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        mainViewModel.getAllFinishedEvents()
+
         val layoutManager = LinearLayoutManager(context)
         binding.rvFinished.layoutManager = layoutManager
         val itemDecoration = DividerItemDecoration(context, layoutManager.orientation)
@@ -52,7 +54,6 @@ class FinishedFragment : Fragment() {
                 binding.progressBar.visibility = View.GONE
             }
         }
-
     }
 
     override fun onDestroyView() {

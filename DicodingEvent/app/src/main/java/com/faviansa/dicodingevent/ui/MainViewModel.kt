@@ -23,11 +23,11 @@ class MainViewModel: ViewModel() {
     val error: MutableLiveData<Error?> = _error
 
     init {
-        getUpcomingEvents()
-        getFinishedEvents()
+        getHomeUpcomingEvents()
+        getHomeFinishedEvents()
     }
 
-    fun getUpcomingEvents() {
+    fun getAllUpcomingEvents() {
         _isLoading.value = true
         val client = ApiConfig.getApiService().getUpcomingEvents()
         client.enqueue(object : Callback<EventResponse> {
@@ -47,9 +47,86 @@ class MainViewModel: ViewModel() {
         })
     }
 
-    fun getFinishedEvents() {
+    fun getAllFinishedEvents() {
         _isLoading.value = true
         val client = ApiConfig.getApiService().getFinishedEvents()
+        client.enqueue(object : Callback<EventResponse> {
+            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _finishedEvents.value = response.body()?.listEvents ?: emptyList()
+                } else {
+                    _isLoading.value = false
+                    _error.value = Error("Error: ${response.message()}")
+                }
+            }
+            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
+                _error.value = Error("Failure: ${t.message}")
+            }
+        })
+    }
+
+    fun getHomeUpcomingEvents() {
+        _isLoading.value = true
+        val client = ApiConfig.getApiService().getUpcomingEvents()
+        client.enqueue(object : Callback<EventResponse> {
+            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _upcomingEvents.value = response.body()?.listEvents?.take(5) ?: emptyList()
+                } else {
+                    _isLoading.value = false
+                    _error.value = Error("Error: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
+                _error.value = Error("Failure: ${t.message}")
+            }
+        })
+    }
+
+    fun getHomeFinishedEvents() {
+        _isLoading.value = true
+        val client = ApiConfig.getApiService().getFinishedEvents()
+        client.enqueue(object : Callback<EventResponse> {
+            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _finishedEvents.value = response.body()?.listEvents?.take(5) ?: emptyList()
+                } else {
+                    _isLoading.value = false
+                    _error.value = Error("Error: ${response.message()}")
+                }
+            }
+            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
+                _error.value = Error("Failure: ${t.message}")
+            }
+        })
+    }
+
+    fun searchUpcomingEvents(query: String) {
+        _isLoading.value = true
+        val client = ApiConfig.getApiService().searchEvents(1, query)
+        client.enqueue(object : Callback<EventResponse> {
+            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _upcomingEvents.value = response.body()?.listEvents ?: emptyList()
+                } else {
+                    _isLoading.value = false
+                    _error.value = Error("Error: ${response.message()}")
+                }
+            }
+            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
+                _error.value = Error("Failure: ${t.message}")
+            }
+        })
+    }
+
+    fun searchFinishedEvents(query: String) {
+        _isLoading.value = true
+        val client = ApiConfig.getApiService().searchEvents(0, query)
         client.enqueue(object : Callback<EventResponse> {
             override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
                 _isLoading.value = false

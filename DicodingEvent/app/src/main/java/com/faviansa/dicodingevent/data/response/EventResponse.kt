@@ -57,7 +57,7 @@ data class ListEventsItem(
     val category: String? = null
 )
 
-data class SpecificEventResponse(
+data class DetailEventResponse(
     @field:SerializedName("event")
     val event: ListEventsItem?,
 

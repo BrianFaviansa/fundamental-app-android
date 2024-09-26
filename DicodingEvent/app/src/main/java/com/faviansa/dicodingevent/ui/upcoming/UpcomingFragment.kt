@@ -34,6 +34,8 @@ class UpcomingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        mainViewModel.getAllUpcomingEvents()
+
         val layoutManager = LinearLayoutManager(context)
         binding.rvUpcoming.layoutManager = layoutManager
         val itemDecoration = DividerItemDecoration(context, layoutManager.orientation)
@@ -53,7 +55,6 @@ class UpcomingFragment : Fragment() {
         }
 
         mainViewModel.error.observe(viewLifecycleOwner) { error ->
-
         }
     }
 
