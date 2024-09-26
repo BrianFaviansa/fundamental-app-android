@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 
 class CategoryFragment : Fragment(), View.OnClickListener {
 
@@ -25,7 +26,7 @@ class CategoryFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        if(v?.id == R.id.btn_detail_category) {
+        if (v?.id == R.id.btn_detail_category) {
             val detailCategoryFragment = DetailCategoryFragment()
 
             val bundle = Bundle()
@@ -36,10 +37,20 @@ class CategoryFragment : Fragment(), View.OnClickListener {
             detailCategoryFragment.description = description
 
             val fragmentManager = parentFragmentManager
-            fragmentManager?.beginTransaction()?.apply {
-                replace(R.id.frame_container, detailCategoryFragment, DetailCategoryFragment::class.java.simpleName)
+//            fragmentManager?.beginTransaction()?.apply {
+//                replace(R.id.frame_container, detailCategoryFragment, DetailCategoryFragment::class.java.simpleName)
+//                addToBackStack(null)
+//                commit()
+//            }
+
+            // using KTX
+            fragmentManager.commit {
                 addToBackStack(null)
-                commit()
+                replace(
+                    R.id.frame_container,
+                    detailCategoryFragment,
+                    DetailCategoryFragment::class.java.simpleName
+                )
             }
 
         }
