@@ -1,60 +1,70 @@
 package com.faviansa.dicodingevent.ui.detail
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
-import com.faviansa.dicodingevent.R
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.faviansa.dicodingevent.data.response.ListEventsItem
+import com.faviansa.dicodingevent.databinding.FragmentDetailBinding
+import com.faviansa.dicodingevent.utils.DateFormat.formatCardDate
+import com.faviansa.dicodingevent.utils.DateFormat.formatDetailTime
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [DetailFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DetailFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentDetailBinding? = null
+    private val binding get() = _binding!!
+    private val args: DetailFragmentArgs by navArgs()
+    private val viewModel: DetailViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail, container, false)
+        _binding = FragmentDetailBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DetailFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DetailFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val eventId = args.eventId
+
+        viewModel.getDetailEvent(eventId)
+
+        viewModel.event.observe(viewLifecycleOwner) { event: ListEventsItem? ->
+            event?.let { it ->
+                binding.detailEventName.text = it.name
+                binding.detailEventOwner.text = it.ownerName
+                binding.detailEventDate.text = it.beginTime?.let { formatCardDate(it) }
+                binding.detailEventBeginTime.text = it.beginTime?.let { formatDetailTime(it) }
+                binding.detailEventQuota.text = "${it.registrants}/${it.quota}"
+                binding.detailEventDescription.text = HtmlCompat.fromHtml(
+                    it.description.toString(),
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                )
+                Glide.with(this).load(it.imageLogo).into(binding.detailEventImage)
             }
+        }
+
+        binding.btnEventLink.setOnClickListener {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(viewModel.event.value?.link))
+            val browserChooserIntent =
+                Intent.createChooser(browserIntent, "Choose browser of your choice")
+            startActivity(browserChooserIntent)
+        }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 }

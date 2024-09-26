@@ -46,4 +46,13 @@
                 app:argType="string" />
         </action>
     </fragment>
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.faviansa.dicodingevent.ui.detail.DetailFragment"
+        tools:layout="@layout/fragment_detail">
+        <argument
+            android:name="eventId"
+            app:argType="string" />
+    </fragment>
 </navigation>

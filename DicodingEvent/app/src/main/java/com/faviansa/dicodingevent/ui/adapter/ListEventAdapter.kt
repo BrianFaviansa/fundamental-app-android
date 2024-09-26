@@ -2,13 +2,17 @@ package com.faviansa.dicodingevent.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.faviansa.dicodingevent.R
 import com.faviansa.dicodingevent.data.response.ListEventsItem
 import com.faviansa.dicodingevent.databinding.ItemCardBinding
+import com.faviansa.dicodingevent.ui.finished.FinishedFragmentDirections
+import com.faviansa.dicodingevent.ui.home.HomeFragmentDirections
+import com.faviansa.dicodingevent.ui.upcoming.UpcomingFragmentDirections
 import com.faviansa.dicodingevent.utils.DateFormat.formatCardDate
 
 class ListEventAdapter : ListAdapter<ListEventsItem, ListEventAdapter.MyViewHolder>(DIFF_CALLBACK) {
@@ -21,16 +25,16 @@ class ListEventAdapter : ListAdapter<ListEventsItem, ListEventAdapter.MyViewHold
         val event = getItem(position)
         holder.bind(event)
 
-        holder.itemView.setOnClickListener {
-            Toast.makeText(it.context, "Clicked id : ${event.id}, event name : ${event.name}", Toast.LENGTH_SHORT).show()
-//            val navController = it.findNavController()
-//            val action = when(navController.currentDestination?.id) {
-//                R.id.navigation_home -> HomeFragmentDirections.actionHomeFragmentToDetailFragment(event.id.toString())
-//                R.id.navigation_upcoming -> UpcomingFragmentDirections.actionUpcomingFragmentToDetailFragment(event.id.toString())
-//                R.id.navigation_finished -> FinishedFragmentDirections.actionFinishedFragmentToDetailFragment(event.id.toString())
-//                else -> null
-//            }
-//            action?.let { navController.navigate(it) }
+        holder.itemView.setOnClickListener { it ->
+//            Toast.makeText(it.context, "Clicked id : ${event.id}, event name : ${event.name}", Toast.LENGTH_SHORT).show()
+            val navController = it.findNavController()
+            val action = when(navController.currentDestination?.id) {
+                R.id.navigation_home -> HomeFragmentDirections.actionHomeFragmentToDetailFragment(event.id.toString())
+                R.id.navigation_upcoming -> UpcomingFragmentDirections.actionUpcomingFragmentToDetailFragment(event.id.toString())
+                R.id.navigation_finished -> FinishedFragmentDirections.actionFinishedFragmentToDetailFragment(event.id.toString())
+                else -> null
+            }
+            action?.let { navController.navigate(it) }
         }
     }
 
