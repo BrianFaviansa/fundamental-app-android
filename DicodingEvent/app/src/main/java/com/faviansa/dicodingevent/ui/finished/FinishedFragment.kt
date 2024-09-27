@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -25,33 +26,60 @@ class FinishedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         mainViewModel =
-            ViewModelProvider(this).get(MainViewModel::class.java)
+            ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
         _binding = FragmentFinishedBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainViewModel.getAllFinishedEvents()
+        setupRecyclerView()
+        setupSearchView()
+        observeViewModel()
 
+        if (savedInstanceState == null) {
+            mainViewModel.getAllFinishedEvents()
+        }
+    }
+
+    private fun setupRecyclerView() {
         val layoutManager = LinearLayoutManager(context)
         binding.rvFinished.layoutManager = layoutManager
-        val itemDecoration = DividerItemDecoration(context, layoutManager.orientation)
-        binding.rvFinished.addItemDecoration(itemDecoration)
+        binding.rvFinished.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
+    }
 
+    private fun setupSearchView() {
+        binding.svFinished.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { mainViewModel.searchFinishedEvents(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { mainViewModel.searchFinishedEvents(it) }
+                return true
+            }
+        })
+    }
+
+    private fun observeViewModel() {
         mainViewModel.finishedEvents.observe(viewLifecycleOwner) { listEvents ->
-            setEventsData(listEvents)
+            listEvents?.let { setEventsData(it) }
         }
 
         mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) {
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        mainViewModel.error.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                if (!mainViewModel.isErrorHandled()) {
+                    showErrorDialog(it)
+                    mainViewModel.errorHandled()
+                }
             }
         }
     }
@@ -61,9 +89,24 @@ class FinishedFragment : Fragment() {
         _binding = null
     }
 
-    fun setEventsData(listEvents: List<ListEventsItem>) {
+    private fun setEventsData(listEvents: List<ListEventsItem>) {
         val adapter = ListEventAdapter()
         adapter.submitList(listEvents)
         binding.rvFinished.adapter = adapter
+    }
+
+    private fun showErrorDialog(message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Error")
+            .setMessage(message)
+            .setPositiveButton("Retry") { dialog, _ ->
+                mainViewModel.getAllFinishedEvents()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .show()
     }
 }

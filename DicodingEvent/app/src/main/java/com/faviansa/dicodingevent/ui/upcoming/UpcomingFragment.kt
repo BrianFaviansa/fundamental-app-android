@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -25,7 +26,7 @@ class UpcomingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         mainViewModel =
-            ViewModelProvider(this).get(MainViewModel::class.java)
+            ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
         _binding = FragmentUpcomingBinding.inflate(inflater, container, false)
         return binding.root
@@ -34,27 +35,52 @@ class UpcomingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainViewModel.getAllUpcomingEvents()
+        setupRecyclerView()
+        setupSearchView()
+        observeViewModel()
 
+        if (savedInstanceState == null) {
+            mainViewModel.getAllUpcomingEvents()
+        }
+    }
+
+    private fun setupRecyclerView() {
         val layoutManager = LinearLayoutManager(context)
         binding.rvUpcoming.layoutManager = layoutManager
-        val itemDecoration = DividerItemDecoration(context, layoutManager.orientation)
-        binding.rvUpcoming.addItemDecoration(itemDecoration)
+        binding.rvUpcoming.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
+    }
 
+    private fun setupSearchView() {
+        binding.svUpcoming.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { mainViewModel.searchUpcomingEvents(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { mainViewModel.searchUpcomingEvents(it) }
+                return true
+            }
+        })
+    }
+
+    private fun observeViewModel() {
         mainViewModel.upcomingEvents.observe(viewLifecycleOwner) { listEvents ->
-            setEventsData(listEvents)
+            listEvents?.let { setEventsData(it) }
         }
 
-        // Optionally observe loading and error states
         mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) {
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
         mainViewModel.error.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                if (!mainViewModel.isErrorHandled()) {
+                    showErrorDialog(it)
+                    mainViewModel.errorHandled()
+                }
+            }
         }
     }
 
@@ -63,9 +89,24 @@ class UpcomingFragment : Fragment() {
         _binding = null
     }
 
-    fun setEventsData(listEvents: List<ListEventsItem>) {
+    private fun setEventsData(listEvents: List<ListEventsItem>) {
         val adapter = ListEventAdapter()
         adapter.submitList(listEvents)
         binding.rvUpcoming.adapter = adapter
+    }
+
+    private fun showErrorDialog(message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Error")
+            .setMessage(message)
+            .setPositiveButton("Retry") { dialog, _ ->
+                mainViewModel.getAllUpcomingEvents()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .show()
     }
 }

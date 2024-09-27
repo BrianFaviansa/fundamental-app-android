@@ -26,19 +26,28 @@ class ListEventAdapter : ListAdapter<ListEventsItem, ListEventAdapter.MyViewHold
         holder.bind(event)
 
         holder.itemView.setOnClickListener { it ->
-//            Toast.makeText(it.context, "Clicked id : ${event.id}, event name : ${event.name}", Toast.LENGTH_SHORT).show()
             val navController = it.findNavController()
-            val action = when(navController.currentDestination?.id) {
-                R.id.navigation_home -> HomeFragmentDirections.actionHomeFragmentToDetailFragment(event.id.toString())
-                R.id.navigation_upcoming -> UpcomingFragmentDirections.actionUpcomingFragmentToDetailFragment(event.id.toString())
-                R.id.navigation_finished -> FinishedFragmentDirections.actionFinishedFragmentToDetailFragment(event.id.toString())
+            val action = when (navController.currentDestination?.id) {
+                R.id.navigation_home -> HomeFragmentDirections.actionHomeFragmentToDetailFragment(
+                    event.id.toString()
+                )
+
+                R.id.navigation_upcoming -> UpcomingFragmentDirections.actionUpcomingFragmentToDetailFragment(
+                    event.id.toString()
+                )
+
+                R.id.navigation_finished -> FinishedFragmentDirections.actionFinishedFragmentToDetailFragment(
+                    event.id.toString()
+                )
+
                 else -> null
             }
             action?.let { navController.navigate(it) }
         }
     }
 
-    class MyViewHolder(private val binding: ItemCardBinding): RecyclerView.ViewHolder(binding.root) {
+    class MyViewHolder(private val binding: ItemCardBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(event: ListEventsItem) {
             binding.eventName.text = event.name
             binding.eventPlace.text = event.cityName

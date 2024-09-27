@@ -26,7 +26,7 @@ class DetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
         return binding.root
@@ -37,7 +37,9 @@ class DetailFragment : Fragment() {
 
         val eventId = args.eventId
 
-        viewModel.getDetailEvent(eventId)
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
 
         viewModel.event.observe(viewLifecycleOwner) { event: ListEventsItem? ->
             event?.let { it ->
@@ -45,7 +47,7 @@ class DetailFragment : Fragment() {
                 binding.detailEventOwner.text = it.ownerName
                 binding.detailEventDate.text = it.beginTime?.let { formatCardDate(it) }
                 binding.detailEventBeginTime.text = it.beginTime?.let { formatDetailTime(it) }
-                binding.detailEventQuota.text = "${it.registrants}/${it.quota}"
+                "${it.registrants}/${it.quota}".also { binding.detailEventQuota.text = it }
                 binding.detailEventDescription.text = HtmlCompat.fromHtml(
                     it.description.toString(),
                     HtmlCompat.FROM_HTML_MODE_LEGACY
@@ -57,9 +59,11 @@ class DetailFragment : Fragment() {
         binding.btnEventLink.setOnClickListener {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(viewModel.event.value?.link))
             val browserChooserIntent =
-                Intent.createChooser(browserIntent, "Choose browser of your choice")
+                Intent.createChooser(browserIntent, "Choose browser to open")
             startActivity(browserChooserIntent)
         }
+
+        viewModel.getDetailEvent(eventId)
     }
 
     override fun onDestroyView() {

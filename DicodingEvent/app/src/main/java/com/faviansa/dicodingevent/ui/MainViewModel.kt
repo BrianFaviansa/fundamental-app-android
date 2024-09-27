@@ -1,145 +1,114 @@
 package com.faviansa.dicodingevent.ui
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.faviansa.dicodingevent.data.response.EventResponse
+import com.faviansa.dicodingevent.data.repository.EventRepository
 import com.faviansa.dicodingevent.data.response.ListEventsItem
-import com.faviansa.dicodingevent.data.retrofit.ApiConfig
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class MainViewModel: ViewModel() {
-    private val _upcomingEvents = MutableLiveData<List<ListEventsItem>>()
-    val upcomingEvents: MutableLiveData<List<ListEventsItem>> = _upcomingEvents
+class MainViewModel : ViewModel() {
+    private val repository = EventRepository()
 
-    private val _finishedEvents = MutableLiveData<List<ListEventsItem>>()
-    val finishedEvents: MutableLiveData<List<ListEventsItem>> = _finishedEvents
+    private val _upcomingEvents = MutableLiveData<List<ListEventsItem>?>()
+    val upcomingEvents: LiveData<List<ListEventsItem>?> = _upcomingEvents
+
+    private val _finishedEvents = MutableLiveData<List<ListEventsItem>?>()
+    val finishedEvents: LiveData<List<ListEventsItem>?> = _finishedEvents
 
     private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: MutableLiveData<Boolean> = _isLoading
+    val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _error = MutableLiveData<Error?>()
-    val error: MutableLiveData<Error?> = _error
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> get() = _error
 
-    init {
-        getHomeUpcomingEvents()
-        getHomeFinishedEvents()
-    }
+    private var errorHandled = false
+
 
     fun getAllUpcomingEvents() {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().getUpcomingEvents()
-        client.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _upcomingEvents.value = response.body()?.listEvents ?: emptyList()
-                } else {
-                    _isLoading.value = false
-                    _error.value = Error("Error: ${response.message()}")
-                }
+        repository.getAllUpcomingEvents { listEvents, error ->
+            _isLoading.value = false
+            if (listEvents != null) {
+                _upcomingEvents.value = listEvents
+            } else {
+                _error.value = error
+                resetErrorHandled()
             }
-
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _error.value = Error("Failure: ${t.message}")
-            }
-        })
+        }
     }
 
     fun getAllFinishedEvents() {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().getFinishedEvents()
-        client.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _finishedEvents.value = response.body()?.listEvents ?: emptyList()
-                } else {
-                    _isLoading.value = false
-                    _error.value = Error("Error: ${response.message()}")
-                }
+        repository.getAllFinishedEvents { listEvents, error ->
+            _isLoading.value = false
+            if (listEvents != null) {
+                _finishedEvents.value = listEvents
+            } else {
+                _error.value = error
+                resetErrorHandled()
             }
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _error.value = Error("Failure: ${t.message}")
-            }
-        })
-    }
-
-    fun getHomeUpcomingEvents() {
-        _isLoading.value = true
-        val client = ApiConfig.getApiService().getUpcomingEvents()
-        client.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _upcomingEvents.value = response.body()?.listEvents?.take(5) ?: emptyList()
-                } else {
-                    _isLoading.value = false
-                    _error.value = Error("Error: ${response.message()}")
-                }
-            }
-
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _error.value = Error("Failure: ${t.message}")
-            }
-        })
-    }
-
-    fun getHomeFinishedEvents() {
-        _isLoading.value = true
-        val client = ApiConfig.getApiService().getFinishedEvents()
-        client.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _finishedEvents.value = response.body()?.listEvents?.take(5) ?: emptyList()
-                } else {
-                    _isLoading.value = false
-                    _error.value = Error("Error: ${response.message()}")
-                }
-            }
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _error.value = Error("Failure: ${t.message}")
-            }
-        })
+        }
     }
 
     fun searchUpcomingEvents(query: String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().searchEvents(1, query)
-        client.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _upcomingEvents.value = response.body()?.listEvents ?: emptyList()
-                } else {
-                    _isLoading.value = false
-                    _error.value = Error("Error: ${response.message()}")
-                }
+        repository.searchUpcomingEvents(query) { listEvents, error ->
+            _isLoading.value = false
+            if (listEvents != null) {
+                _upcomingEvents.value = listEvents
+            } else {
+                _error.value = error
+                resetErrorHandled()
             }
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _error.value = Error("Failure: ${t.message}")
-            }
-        })
+        }
     }
 
     fun searchFinishedEvents(query: String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().searchEvents(0, query)
-        client.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _finishedEvents.value = response.body()?.listEvents ?: emptyList()
-                } else {
-                    _isLoading.value = false
-                    _error.value = Error("Error: ${response.message()}")
-                }
+        repository.searchFinishedEvents(query) { listEvents, error ->
+            _isLoading.value = false
+            if (listEvents != null) {
+                _finishedEvents.value = listEvents
+            } else {
+                _error.value = error
+                resetErrorHandled()
             }
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _error.value = Error("Failure: ${t.message}")
-            }
-        })
+        }
     }
+
+    fun getHomeEvents() {
+        _isLoading.value = true
+        repository.getHomeUpcomingEvents { listEvents, error ->
+            if (listEvents != null) {
+                _upcomingEvents.value = listEvents
+            } else {
+                _error.value = error
+                resetErrorHandled()
+            }
+        }
+
+        repository.getHomeFinishedEvents { listEvents, error ->
+            if (listEvents != null) {
+                _finishedEvents.value = listEvents
+            } else {
+                _error.value = error
+                resetErrorHandled()
+            }
+        }
+    }
+
+
+    fun errorHandled() {
+        errorHandled = true
+        _error.value = null
+    }
+
+    fun isErrorHandled(): Boolean {
+        return errorHandled
+    }
+
+    private fun resetErrorHandled() {
+        errorHandled = false
+    }
+
 }
