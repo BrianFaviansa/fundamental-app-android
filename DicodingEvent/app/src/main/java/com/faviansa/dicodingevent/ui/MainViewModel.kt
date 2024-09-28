@@ -9,6 +9,12 @@ import com.faviansa.dicodingevent.data.response.ListEventsItem
 class MainViewModel : ViewModel() {
     private val repository = EventRepository()
 
+    private val _homeUpcomingEvents = MutableLiveData<List<ListEventsItem>?>()
+    val homeUpcomingEvents: LiveData<List<ListEventsItem>?> = _homeUpcomingEvents
+
+    private val _homeFinishedEvents = MutableLiveData<List<ListEventsItem>?>()
+    val homeFinishedEvents: LiveData<List<ListEventsItem>?> = _homeFinishedEvents
+
     private val _upcomingEvents = MutableLiveData<List<ListEventsItem>?>()
     val upcomingEvents: LiveData<List<ListEventsItem>?> = _upcomingEvents
 
@@ -80,7 +86,7 @@ class MainViewModel : ViewModel() {
         _isLoading.value = true
         repository.getHomeUpcomingEvents { listEvents, error ->
             if (listEvents != null) {
-                _upcomingEvents.value = listEvents
+                _homeUpcomingEvents.value = listEvents
             } else {
                 _error.value = error
                 resetErrorHandled()
@@ -89,7 +95,7 @@ class MainViewModel : ViewModel() {
 
         repository.getHomeFinishedEvents { listEvents, error ->
             if (listEvents != null) {
-                _finishedEvents.value = listEvents
+                _homeFinishedEvents.value = listEvents
             } else {
                 _error.value = error
                 resetErrorHandled()

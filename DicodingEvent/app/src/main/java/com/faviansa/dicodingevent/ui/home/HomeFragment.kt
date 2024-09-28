@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -46,19 +47,30 @@ class HomeFragment : Fragment() {
     private fun setupRecyclerViews() {
         val layoutManagerFinished = LinearLayoutManager(context)
         binding.rvFinished.layoutManager = layoutManagerFinished
-        binding.rvFinished.addItemDecoration(DividerItemDecoration(context, layoutManagerFinished.orientation))
+        binding.rvFinished.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                layoutManagerFinished.orientation
+            )
+        )
 
-        val layoutManagerUpcoming = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        val layoutManagerUpcoming =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvUpcoming.layoutManager = layoutManagerUpcoming
-        binding.rvUpcoming.addItemDecoration(DividerItemDecoration(context, layoutManagerUpcoming.orientation))
+        binding.rvUpcoming.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                layoutManagerUpcoming.orientation
+            )
+        )
     }
 
     private fun observeViewModel() {
-        mainViewModel.upcomingEvents.observe(viewLifecycleOwner) { listEvents ->
+        mainViewModel.homeUpcomingEvents.observe(viewLifecycleOwner) { listEvents ->
             listEvents?.let { setUpcomingEventsData(it) }
         }
 
-        mainViewModel.finishedEvents.observe(viewLifecycleOwner) { listEvents ->
+        mainViewModel.homeFinishedEvents.observe(viewLifecycleOwner) { listEvents ->
             listEvents?.let { setFinishedEventsData(it) }
         }
 
@@ -94,17 +106,35 @@ class HomeFragment : Fragment() {
     }
 
     private fun showErrorDialog(message: String) {
-        AlertDialog.Builder(requireContext())
+        val hasData = mainViewModel.homeFinishedEvents.value != null &&
+                mainViewModel.homeUpcomingEvents.value != null
+
+        val builder = AlertDialog.Builder(requireContext())
             .setTitle("Error")
             .setMessage(message)
             .setPositiveButton("Retry") { dialog, _ ->
                 mainViewModel.getHomeEvents()
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            .setCancelable(hasData)
+
+        if (hasData) {
+            builder.setNegativeButton("Close") { dialog, _ ->
                 dialog.dismiss()
             }
-            .setCancelable(false)
-            .show()
+        } else {
+            builder.setNegativeButton("Close") { _, _ ->
+                Toast.makeText(context, "Please turn on your internet connection before closing", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        val dialog = builder.create()
+
+        dialog.setOnShowListener {
+            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            negativeButton.isEnabled = hasData
+        }
+
+        dialog.show()
     }
 }

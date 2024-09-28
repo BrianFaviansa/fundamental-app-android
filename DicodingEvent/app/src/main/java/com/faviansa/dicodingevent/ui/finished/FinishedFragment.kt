@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -39,7 +40,7 @@ class FinishedFragment : Fragment() {
         setupSearchView()
         observeViewModel()
 
-        if (savedInstanceState == null) {
+        if (mainViewModel.finishedEvents.value == null) {
             mainViewModel.getAllFinishedEvents()
         }
     }
@@ -96,17 +97,34 @@ class FinishedFragment : Fragment() {
     }
 
     private fun showErrorDialog(message: String) {
-        AlertDialog.Builder(requireContext())
+        val hasData = mainViewModel.finishedEvents.value != null
+
+        val builder = AlertDialog.Builder(requireContext())
             .setTitle("Error")
             .setMessage(message)
             .setPositiveButton("Retry") { dialog, _ ->
                 mainViewModel.getAllFinishedEvents()
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            .setCancelable(hasData)
+
+        if (hasData) {
+            builder.setNegativeButton("Close") { dialog, _ ->
                 dialog.dismiss()
             }
-            .setCancelable(false)
-            .show()
+        } else {
+            builder.setNegativeButton("Close") { _, _ ->
+                Toast.makeText(context, "Please turn on your internet connection before closing", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        val dialog = builder.create()
+
+        dialog.setOnShowListener {
+            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            negativeButton.isEnabled = hasData
+        }
+
+        dialog.show()
     }
 }

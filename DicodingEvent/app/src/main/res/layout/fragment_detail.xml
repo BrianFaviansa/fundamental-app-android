@@ -1,113 +1,116 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="10dp"
-    android:id="@+id/detailFragment"
-    tools:context=".ui.detail.DetailFragment">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/detailFragment"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        tools:context=".ui.detail.DetailFragment">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:foregroundGravity="center"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <ImageView
-            android:id="@+id/detailEventImage"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:contentDescription="@string/img_description" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/detailEventName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:textSize="21sp"
-            android:textAlignment="center"
-            android:textStyle="bold"
-            android:text="@string/event_name"
-            />
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:foregroundGravity="center"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/detailEventOwner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:gravity="center_vertical"
-            android:drawablePadding="6dp"
-            android:text="@string/event_owner"
-            app:drawableStartCompat="@drawable/baseline_contact_support_24" />
+            <ImageView
+                android:id="@+id/detailEventImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:contentDescription="@string/img_description" />
 
-        <TextView
-            android:id="@+id/detailEventDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:gravity="center_vertical"
-            android:drawablePadding="6dp"
-            android:text="@string/event_date"
-            app:drawableStartCompat="@drawable/baseline_calendar_month_24" />
+            <TextView
+                android:id="@+id/detailEventName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:text="@string/event_name"
+                android:textAlignment="center"
+                android:textSize="21sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/detailEventBeginTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:gravity="center_vertical"
-            android:drawablePadding="6dp"
-            android:text="@string/event_time"
-            app:drawableStartCompat="@drawable/baseline_access_time_filled_24" />
+            <TextView
+                android:id="@+id/detailEventOwner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:text="@string/event_owner"
+                app:drawableStartCompat="@drawable/baseline_contact_support_24" />
 
-        <TextView
-            android:id="@+id/detailEventQuota"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:gravity="center_vertical"
-            android:drawablePadding="6dp"
-            android:text="@string/event_quota"
-            app:drawableStartCompat="@drawable/baseline_people_24" />
+            <TextView
+                android:id="@+id/detailEventDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:text="@string/event_date"
+                app:drawableStartCompat="@drawable/baseline_calendar_month_24" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:gravity="center_vertical"
-            android:drawablePadding="6dp"
-            android:text="@string/tv_event_description"
-            app:drawableStartCompat="@drawable/baseline_info_24" />
+            <TextView
+                android:id="@+id/detailEventBeginTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:text="@string/event_time"
+                app:drawableStartCompat="@drawable/baseline_access_time_filled_24" />
 
-        <TextView
-            android:id="@+id/detailEventDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="5dp"
-            android:gravity="center_vertical"
-            android:drawablePadding="6dp"
-            android:text="@string/event_description"
-            />
+            <TextView
+                android:id="@+id/detailEventQuota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:text="@string/event_quota"
+                app:drawableStartCompat="@drawable/baseline_people_24" />
 
-        <Button
-            android:id="@+id/btnEventLink"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/register"
-            />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:text="@string/tv_event_description"
+                app:drawableStartCompat="@drawable/baseline_info_24" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/detailEventDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:text="@string/event_description" />
 
-</ScrollView>
+            <Button
+                android:id="@+id/btnEventLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/register" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
