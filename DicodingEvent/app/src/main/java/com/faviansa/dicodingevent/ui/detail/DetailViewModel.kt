@@ -16,7 +16,6 @@ class DetailViewModel : ViewModel() {
     val isLoading: LiveData<Boolean> = _isLoading
 
     private val _error = MutableLiveData<Error?>()
-    val error: LiveData<Error?> = _error
 
     fun getDetailEvent(eventId: String) {
         _isLoading.value = true
