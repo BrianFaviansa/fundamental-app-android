@@ -43,6 +43,7 @@ class DetailFragment : Fragment() {
             title = "Event Detail" // or dynamically set based on the event
         }
 
+        @Suppress("DEPRECATION")
         setHasOptionsMenu(true)
 
         val eventId = args.eventId
@@ -57,7 +58,7 @@ class DetailFragment : Fragment() {
                 binding.detailEventOwner.text = it.ownerName
                 binding.detailEventDate.text = it.beginTime?.let { formatCardDate(it) }
                 binding.detailEventBeginTime.text = it.beginTime?.let { formatDetailTime(it) }
-                "${it.registrants}/${it.quota}".also { binding.detailEventQuota.text = it }
+                binding.detailEventQuota.text = ((it.quota ?: 0) - (it.registrants ?: 0)).toString()
                 binding.detailEventDescription.text = HtmlCompat.fromHtml(
                     it.description.toString(),
                     HtmlCompat.FROM_HTML_MODE_LEGACY
