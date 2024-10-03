@@ -24,8 +24,10 @@ class AlarmReceiver : BroadcastReceiver() {
         val type = intent.getStringExtra(EXTRA_TYPE)
         val message = intent.getStringExtra(EXTRA_MESSAGE)
 
-        val title = if(type.equals(TYPE_ONE_TIME, ignoreCase = true)) TYPE_ONE_TIME else TYPE_REPEATING
-        val notifId = if (type.equals(TYPE_ONE_TIME, ignoreCase = true)) ID_ONETIME else ID_REPEATING
+        val title =
+            if (type.equals(TYPE_ONE_TIME, ignoreCase = true)) TYPE_ONE_TIME else TYPE_REPEATING
+        val notifId =
+            if (type.equals(TYPE_ONE_TIME, ignoreCase = true)) ID_ONETIME else ID_REPEATING
 
         if (message != null) {
             showAlarmNotification(context, title, message, notifId)
@@ -92,11 +94,36 @@ class AlarmReceiver : BroadcastReceiver() {
         Toast.makeText(context, "Repeating alarm set up", Toast.LENGTH_SHORT).show()
     }
 
-    private fun showAlarmNotification(context: Context, title: String, message: String, notifId: Int) {
+    fun cancelAlarm(context: Context, type: String) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, AlarmReceiver::class.java)
+        val requestCode =
+            if (type.equals(TYPE_ONE_TIME, ignoreCase = true)) ID_ONETIME else ID_REPEATING
+        val pendingIntent =
+            PendingIntent.getBroadcast(
+                context,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+            )
+        if (pendingIntent != null) {
+            pendingIntent.cancel()
+            alarmManager.cancel(pendingIntent)
+            Toast.makeText(context, "Repeating alarm dibatalkan", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showAlarmNotification(
+        context: Context,
+        title: String,
+        message: String,
+        notifId: Int
+    ) {
         val channelId = "Channel_1"
         val channelname = "AlarmManager channel"
 
-        val notificationManagerCompat = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManagerCompat =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.baseline_access_time_24)
