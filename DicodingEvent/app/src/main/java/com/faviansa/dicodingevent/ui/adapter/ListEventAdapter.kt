@@ -1,5 +1,7 @@
 package com.faviansa.dicodingevent.ui.adapter
 
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -52,6 +54,7 @@ class ListEventAdapter(
         upcomingEvents.clear()
         upcomingEvents.addAll(newEvents)
         diffResult.dispatchUpdatesTo(this)
+        Log.d("ListEventAdapter", "Upcoming events updated: $newEvents")
     }
 
     fun setFinishedEvents(newEvents: List<EventEntity>) {
@@ -71,15 +74,27 @@ class ListEventAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyListEventViewHolder {
-        TODO("Not yet implemented")
+        val binding = ItemCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyListEventViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
-        TODO("Not yet implemented")
+        return when (viewType) {
+            UPCOMING_VIEW_TYPE -> upcomingEvents.size
+            FINISHED_VIEW_TYPE -> finishedEvents.size
+            FAVORITE_VIEW_TYPE -> favoriteEvents.size
+            else -> 0
+        }
     }
 
     override fun onBindViewHolder(holder: MyListEventViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val event = when (viewType) {
+            UPCOMING_VIEW_TYPE -> upcomingEvents[position]
+            FINISHED_VIEW_TYPE -> finishedEvents[position]
+            FAVORITE_VIEW_TYPE -> favoriteEvents[position]
+            else -> throw IllegalArgumentException("Invalid view type")
+        }
+        holder.bind(event)
     }
 
     private class EventDiffCallback(
@@ -99,8 +114,8 @@ class ListEventAdapter(
     }
 
     companion object {
-        private const val UPCOMING_VIEW_TYPE = 1
-        private const val FINISHED_VIEW_TYPE = 2
-        private const val FAVORITE_VIEW_TYPE = 3
+        const val UPCOMING_VIEW_TYPE = 1
+        const val FINISHED_VIEW_TYPE = 2
+        const val FAVORITE_VIEW_TYPE = 3
     }
 }

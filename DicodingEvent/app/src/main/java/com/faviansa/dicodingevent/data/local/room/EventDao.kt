@@ -23,7 +23,7 @@ interface EventDao {
     fun getFavoriteEvents(): LiveData<List<EventEntity>>
 
     @Query("SELECT * FROM events WHERE isActive = :active AND name LIKE '%' || :query || '%' ORDER BY date(beginTime) ASC")
-    suspend fun searchEvents(active: Int, query: String): LiveData<List<EventEntity>>
+    fun searchEvents(active: Int, query: String): LiveData<List<EventEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertEvents(events: List<EventEntity>)
