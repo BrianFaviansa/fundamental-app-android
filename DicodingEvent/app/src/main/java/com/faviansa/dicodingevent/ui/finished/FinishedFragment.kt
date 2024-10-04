@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.faviansa.dicodingevent.data.response.ListEventsItem
+import com.faviansa.dicodingevent.data.remote.response.ListEventsItem
 import com.faviansa.dicodingevent.databinding.FragmentFinishedBinding
 import com.faviansa.dicodingevent.ui.MainViewModel
 import com.faviansa.dicodingevent.ui.adapter.ListEventAdapter

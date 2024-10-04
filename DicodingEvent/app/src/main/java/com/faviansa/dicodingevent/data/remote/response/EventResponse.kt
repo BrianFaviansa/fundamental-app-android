@@ -1,8 +1,9 @@
-package com.faviansa.dicodingevent.data.response
+package com.faviansa.dicodingevent.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
 data class EventResponse(
+
     @field:SerializedName("listEvents")
     val listEvents: List<ListEventsItem> = listOf(),
 
@@ -14,6 +15,7 @@ data class EventResponse(
 )
 
 data class ListEventsItem(
+
     @field:SerializedName("summary")
     val summary: String? = null,
 
@@ -55,15 +57,4 @@ data class ListEventsItem(
 
     @field:SerializedName("category")
     val category: String? = null
-)
-
-data class DetailEventResponse(
-    @field:SerializedName("event")
-    val event: ListEventsItem?,
-
-    @field:SerializedName("error")
-    val error: Boolean? = null,
-
-    @field:SerializedName("message")
-    val message: String? = null
 )

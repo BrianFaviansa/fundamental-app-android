@@ -14,11 +14,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
-import com.faviansa.dicodingevent.data.response.ListEventsItem
+import com.faviansa.dicodingevent.data.remote.response.ListEventsItem
 import com.faviansa.dicodingevent.databinding.FragmentDetailBinding
 import com.faviansa.dicodingevent.utils.DateFormat.formatCardDate
 import com.faviansa.dicodingevent.utils.DateFormat.formatDetailTime
-
 
 class DetailFragment : Fragment() {
     private var _binding: FragmentDetailBinding? = null
