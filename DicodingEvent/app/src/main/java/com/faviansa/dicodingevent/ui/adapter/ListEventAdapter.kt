@@ -1,11 +1,14 @@
 package com.faviansa.dicodingevent.ui.adapter
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.faviansa.dicodingevent.R
 import com.faviansa.dicodingevent.data.local.entity.EventEntity
 import com.faviansa.dicodingevent.databinding.ItemCardBinding
 import com.faviansa.dicodingevent.ui.MainViewModel
@@ -21,7 +24,9 @@ class ListEventAdapter(
     private val finishedEvents = mutableListOf<EventEntity>()
     private val favoriteEvents = mutableListOf<EventEntity>()
 
-    inner class MyListEventViewHolder(private val binding: ItemCardBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class MyListEventViewHolder(private val binding: ItemCardBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(event: EventEntity) {
             with(binding) {
                 eventName.text = event.name
@@ -33,16 +38,28 @@ class ListEventAdapter(
                     .load(event.imageLogo)
                     .into(eventPhoto)
 
-//                btnFavorite.setOnClickListener {
-//                    viewModel.setFavoriteEvent(event, !event.isFavorite)
-//                }
-//                btnFavorite.setImageDrawable(
-//                    if (event.isFavorite) {
-//                        itemView.resources.getDrawable(R.drawable.ic_favorite)
-//                    } else {
-//                        itemView.resources.getDrawable(R.drawable.ic_favorite_border)
-//                    }
-//                )
+                if (event.isFavorite) {
+                    btnFavorite.background =
+                        itemView.context.getDrawable(R.drawable.baseline_favorite_24)
+                } else {
+                    btnFavorite.background =
+                        itemView.context.getDrawable(R.drawable.baseline_favorite_border_24)
+                }
+
+                btnFavorite.setOnClickListener {
+                    viewModel.setFavoriteEventState(event, !event.isFavorite)
+                    btnFavorite.background = if (event.isFavorite) {
+                        itemView.context.getDrawable(R.drawable.baseline_favorite_24)
+                    } else {
+                        itemView.context.getDrawable(R.drawable.baseline_favorite_border_24)
+                    }
+
+                    val toastMessage =
+                        if (event.isFavorite) "Event added to favorite" else "Event removed from favorite"
+                    Toast.makeText(itemView.context, toastMessage, Toast.LENGTH_SHORT).show()
+                }
+
+
                 itemView.setOnClickListener { onClickedItem(event) }
             }
         }

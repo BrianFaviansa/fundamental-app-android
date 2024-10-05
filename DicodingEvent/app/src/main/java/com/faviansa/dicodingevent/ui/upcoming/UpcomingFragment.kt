@@ -1,27 +1,36 @@
 package com.faviansa.dicodingevent.ui.upcoming
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.faviansa.dicodingevent.data.Result
 import com.faviansa.dicodingevent.databinding.FragmentUpcomingBinding
 import com.faviansa.dicodingevent.ui.MainViewModel
+import com.faviansa.dicodingevent.ui.ViewModelFactory
+import com.faviansa.dicodingevent.ui.adapter.ListEventAdapter
 
 class UpcomingFragment : Fragment() {
 
     private var _binding: FragmentUpcomingBinding? = null
     private val binding get() = _binding!!
-    private lateinit var mainViewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels {
+        ViewModelFactory.getInstance(requireActivity())
+    }
+    private lateinit var upcomingAdapter: ListEventAdapter
+    private lateinit var upcomingRv: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        mainViewModel =
-//            ViewModelProvider(requireActivity())[MainViewModel::class.java]
-
         _binding = FragmentUpcomingBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -29,65 +38,52 @@ class UpcomingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        setupRecyclerView()
-//        setupSearchView()
-//        observeViewModel()
-//
-//        if (mainViewModel.upcomingEvents.value == null) {
-//            mainViewModel.getAllUpcomingEvents()
-//        }
+        setupRecyclerView()
+        observeUpcomingEvents()
     }
-
-//    private fun setupRecyclerView() {
-//        val layoutManager = LinearLayoutManager(context)
-//        binding.rvUpcoming.layoutManager = layoutManager
-//        binding.rvUpcoming.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
-//    }
-//
-//    private fun setupSearchView() {
-//        binding.svUpcoming.setOnQueryTextListener(object :
-//            androidx.appcompat.widget.SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                query?.let { mainViewModel.searchUpcomingEvents(it) }
-//                return true
-//            }
-//
-//            override fun onQueryTextChange(newText: String?): Boolean {
-//                newText?.let { mainViewModel.searchUpcomingEvents(it) }
-//                return true
-//            }
-//        })
-//    }
-//
-//    private fun observeViewModel() {
-//        mainViewModel.upcomingEvents.observe(viewLifecycleOwner) { listEvents ->
-//            listEvents?.let { setEventsData(it) }
-//        }
-//
-//        mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-//            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-//        }
-//
-//        mainViewModel.error.observe(viewLifecycleOwner) { error ->
-//            error?.let {
-//                if (!mainViewModel.isErrorHandled()) {
-//                    showErrorDialog(it)
-//                    mainViewModel.errorHandled()
-//                }
-//            }
-//        }
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-//    private fun setEventsData(listEvents: List<ListEventsItem>) {
-//        val adapter = ListEventAdapter()
-//        adapter.submitList(listEvents)
-//        binding.rvUpcoming.adapter = adapter
-//    }
+    private fun setupRecyclerView() {
+        upcomingRv = binding.rvUpcoming
+
+        upcomingAdapter = ListEventAdapter(
+            onClickedItem = {
+                val action = UpcomingFragmentDirections.actionUpcomingFragmentToDetailFragment(it.id)
+                findNavController().navigate(action)
+            },
+            viewType = ListEventAdapter.UPCOMING_VIEW_TYPE,
+            viewModel = viewModel
+        )
+
+        upcomingRv.apply {
+            adapter = upcomingAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+    }
+
+    private fun observeUpcomingEvents() {
+        viewModel.getUpcomingEvents().observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    Log.d("Upcoming Fragment", "Upcoming events: ${result.data}")
+                    upcomingAdapter.setUpcomingEvents(result.data)
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    Log.e("Upcoming Fragment", "Error: ${result.error}")
+                }
+            }
+        }
+    }
+
 //
 //    private fun showErrorDialog(message: String) {
 //        val hasData = mainViewModel.upcomingEvents.value != null

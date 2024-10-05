@@ -17,6 +17,16 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
+        <Button
+            android:id="@+id/btnFavorite"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/baseline_favorite_border_24"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
         <ImageView
             android:id="@+id/eventPhoto"
             android:layout_width="90dp"

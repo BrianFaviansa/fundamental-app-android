@@ -3,6 +3,7 @@
     <string name="title_home">Home</string>
     <string name="title_upcoming">Upcoming</string>
     <string name="title_finished">Finished</string>
+    <string name="title_favorite">Favorite</string>
     <string name="img_description">Event Image</string>
     <string name="event_name">Event Name</string>
     <string name="event_owner">Event Owner</string>
