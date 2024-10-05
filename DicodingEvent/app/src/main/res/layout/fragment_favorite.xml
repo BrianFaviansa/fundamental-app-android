@@ -5,21 +5,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:padding="10dp"
+    android:padding="16dp"
     tools:context=".ui.favorite.FavoriteFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/svFavorite"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -39,7 +31,7 @@
             android:layout_marginBottom="50dp"
             app:layout_constraintVertical_bias="0.05"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/svFavorite"
+            app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="0dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

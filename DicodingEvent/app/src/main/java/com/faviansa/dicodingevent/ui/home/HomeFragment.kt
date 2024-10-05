@@ -17,13 +17,16 @@ import com.faviansa.dicodingevent.databinding.FragmentHomeBinding
 import com.faviansa.dicodingevent.ui.MainViewModel
 import com.faviansa.dicodingevent.ui.ViewModelFactory
 import com.faviansa.dicodingevent.ui.adapter.ListEventAdapter
+import com.faviansa.dicodingevent.ui.settings.SettingPreferences
+import com.faviansa.dicodingevent.ui.settings.dataStore
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var preferences: SettingPreferences
     private val viewModel: MainViewModel by viewModels {
-        ViewModelFactory.getInstance(requireActivity())
+        ViewModelFactory.getInstance(requireActivity(), preferences)
     }
     private lateinit var upcomingAdapter: ListEventAdapter
     private lateinit var finishedAdapter: ListEventAdapter
@@ -41,6 +44,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        preferences = SettingPreferences.getInstance(requireContext().applicationContext.dataStore)
 
         setupRecyclerViews()
         observeHomeEvents()

@@ -20,13 +20,18 @@ import com.faviansa.dicodingevent.data.local.entity.EventEntity
 import com.faviansa.dicodingevent.databinding.FragmentDetailBinding
 import com.faviansa.dicodingevent.ui.MainViewModel
 import com.faviansa.dicodingevent.ui.ViewModelFactory
+import com.faviansa.dicodingevent.ui.settings.SettingPreferences
+import com.faviansa.dicodingevent.ui.settings.dataStore
+import com.faviansa.dicodingevent.utils.DateFormat.formatCardDate
+import com.faviansa.dicodingevent.utils.DateFormat.formatDetailTime
 
 class DetailFragment : Fragment() {
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
     private val args: DetailFragmentArgs by navArgs()
+    private lateinit var preferences: SettingPreferences
     private val viewModel: MainViewModel by viewModels {
-        ViewModelFactory.getInstance(requireActivity())
+        ViewModelFactory.getInstance(requireActivity(), preferences)
     }
     private val eventId by lazy { args.eventId }
 
@@ -41,6 +46,7 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        preferences = SettingPreferences.getInstance(requireContext().applicationContext.dataStore)
 
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -97,7 +103,8 @@ class DetailFragment : Fragment() {
             detailEventOwner.text = event.ownerName
             detailEventName.text = event.name
             detailEventPlace.text = event.cityName
-            detailEventDate.text = event.beginTime
+            detailEventDate.text = formatCardDate(event.beginTime)
+            detailEventBeginTime.text = formatDetailTime(event.beginTime)
             detailEventQuota.text = "${event.quota - event.registrants}"
             detailEventDescription.text = HtmlCompat.fromHtml(
                 event.description,

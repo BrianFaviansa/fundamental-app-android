@@ -11,7 +11,8 @@
     <string name="event_place">Event Place</string>
     <string name="event_date">Event Date</string>
     <string name="event_time">Event Time</string>
-    <string name="event_quota">Event Quota</string>
+    <string name="event_quota">Event Quota :</string>
+    <string name="quota">100</string>
     <string name="tv_event_description">Event Description :</string>
     <string name="event_description">Event Description</string>
     <string name="register">Register</string>
