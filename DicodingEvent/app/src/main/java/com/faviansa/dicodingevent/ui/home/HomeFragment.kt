@@ -10,9 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.faviansa.dicodingevent.data.Result.Error
-import com.faviansa.dicodingevent.data.Result.Loading
-import com.faviansa.dicodingevent.data.Result.Success
+import com.faviansa.dicodingevent.data.Result
 import com.faviansa.dicodingevent.databinding.FragmentHomeBinding
 import com.faviansa.dicodingevent.ui.MainViewModel
 import com.faviansa.dicodingevent.ui.ViewModelFactory
@@ -88,17 +86,17 @@ class HomeFragment : Fragment() {
         viewModel.getUpcomingEvents().observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 when (result) {
-                    is Loading -> {
+                    is Result.Loading -> {
                         binding.progressBar.visibility = View.VISIBLE
                     }
 
-                    is Success -> {
+                    is Result.Success -> {
                         binding.progressBar.visibility = View.GONE
                         Log.d("HomeFragment", "Upcoming events: ${result.data}")
                         upcomingAdapter.setUpcomingEvents(result.data.take(5))
                     }
 
-                    is Error -> {
+                    is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
                         Log.e("HomeFragment", "Error: ${result.error})}")
                     }
@@ -108,17 +106,17 @@ class HomeFragment : Fragment() {
         viewModel.getFinishedEvents().observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 when (result) {
-                    is Loading -> {
+                    is Result.Loading -> {
                         binding.progressBar.visibility = View.VISIBLE
                     }
 
-                    is Success -> {
+                    is Result.Success -> {
                         binding.progressBar.visibility = View.GONE
                         Log.d("HomeFragment", "Finished events: ${result.data}")
                         finishedAdapter.setFinishedEvents(result.data.take(5))
                     }
 
-                    is Error -> {
+                    is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
                         Log.e("HomeFragment", "Error: ${result.error}")
                     }

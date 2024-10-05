@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -43,6 +44,7 @@ class FinishedFragment : Fragment() {
         preferences = SettingPreferences.getInstance(requireContext().applicationContext.dataStore)
 
         setupRecyclerView()
+        setupSearchView()
         observeFinishedEvents()
     }
 
@@ -67,6 +69,66 @@ class FinishedFragment : Fragment() {
             adapter = finishedAdapter
             layoutManager = LinearLayoutManager(context)
         }
+    }
+
+    private fun setupSearchView() {
+        binding.svFinished.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                viewModel.searchEvents(0, query).observe(viewLifecycleOwner) { result ->
+                    when (result) {
+                        is Result.Loading -> {
+                            binding.progressBar.visibility = View.VISIBLE
+                        }
+                        is Result.Success -> {
+                            binding.progressBar.visibility = View.GONE
+                            finishedAdapter.setFinishedEvents(result.data)
+                        }
+                        is Result.Error -> {
+                            binding.progressBar.visibility = View.GONE
+                            Log.e("Finished Fragment", "Error: ${result.error}")
+                        }
+                    }
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText.isNullOrEmpty()) {
+                    viewModel.getFinishedEvents().observe(viewLifecycleOwner) { result ->
+                        when (result) {
+                            is Result.Loading -> {
+                                binding.progressBar.visibility = View.VISIBLE
+                            }
+                            is Result.Success -> {
+                                binding.progressBar.visibility = View.GONE
+                                finishedAdapter.setFinishedEvents(result.data)
+                            }
+                            is Result.Error -> {
+                                binding.progressBar.visibility = View.GONE
+                                Log.e("Finished Fragment", "Error: ${result.error}")
+                            }
+                        }
+                    }
+                } else {
+                    viewModel.searchEvents(0, newText).observe(viewLifecycleOwner) { result ->
+                        when (result) {
+                            is Result.Loading -> {
+                                binding.progressBar.visibility = View.VISIBLE
+                            }
+                            is Result.Success -> {
+                                binding.progressBar.visibility = View.GONE
+                                finishedAdapter.setFinishedEvents(result.data)
+                            }
+                            is Result.Error -> {
+                                binding.progressBar.visibility = View.GONE
+                                Log.e("Finished Fragment", "Error: ${result.error}")
+                            }
+                        }
+                    }
+                }
+                return false
+            }
+        })
     }
 
     private fun observeFinishedEvents() {
