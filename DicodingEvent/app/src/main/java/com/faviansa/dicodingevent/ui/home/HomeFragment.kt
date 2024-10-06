@@ -17,6 +17,7 @@ import com.faviansa.dicodingevent.ui.ViewModelFactory
 import com.faviansa.dicodingevent.ui.adapter.ListEventAdapter
 import com.faviansa.dicodingevent.ui.settings.SettingPreferences
 import com.faviansa.dicodingevent.ui.settings.dataStore
+import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : Fragment() {
 
@@ -98,7 +99,7 @@ class HomeFragment : Fragment() {
 
                     is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
-                        Log.e("HomeFragment", "Error: ${result.error})}")
+                        showErrorSnackbar(result.error)
                     }
                 }
             }
@@ -118,10 +119,20 @@ class HomeFragment : Fragment() {
 
                     is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
-                        Log.e("HomeFragment", "Error: ${result.error}")
+                        showErrorSnackbar(result.error)
                     }
                 }
             }
+        }
+    }
+
+    private fun showErrorSnackbar(errorMessage: String) {
+        view?.let { view ->
+            Snackbar.make(view, errorMessage, Snackbar.LENGTH_LONG)
+                .setAction("Retry") {
+                    observeHomeEvents()
+                }
+                .show()
         }
     }
 }

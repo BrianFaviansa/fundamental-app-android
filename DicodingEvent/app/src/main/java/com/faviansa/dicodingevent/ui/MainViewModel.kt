@@ -63,7 +63,7 @@ class MainViewModel(
         }
     }
 
-    fun updateReminderSchedule(isActive: Boolean) {
+    private fun updateReminderSchedule(isActive: Boolean) {
         viewModelScope.launch {
             val reminderRequest = PeriodicWorkRequestBuilder<MyReminderWorker>(1, TimeUnit.DAYS)
                 .addTag(MyReminderWorker.WORK_NAME)
@@ -79,4 +79,5 @@ class MainViewModel(
             }
         }
     }
+
 }

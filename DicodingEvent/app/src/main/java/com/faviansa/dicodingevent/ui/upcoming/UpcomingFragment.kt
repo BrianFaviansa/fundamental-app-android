@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,6 +19,7 @@ import com.faviansa.dicodingevent.ui.ViewModelFactory
 import com.faviansa.dicodingevent.ui.adapter.ListEventAdapter
 import com.faviansa.dicodingevent.ui.settings.SettingPreferences
 import com.faviansa.dicodingevent.ui.settings.dataStore
+import com.google.android.material.snackbar.Snackbar
 
 class UpcomingFragment : Fragment() {
 
@@ -58,7 +60,8 @@ class UpcomingFragment : Fragment() {
 
         upcomingAdapter = ListEventAdapter(
             onClickedItem = {
-                val action = UpcomingFragmentDirections.actionUpcomingFragmentToDetailFragment(it.id)
+                val action =
+                    UpcomingFragmentDirections.actionUpcomingFragmentToDetailFragment(it.id)
                 findNavController().navigate(action)
             },
             viewType = ListEventAdapter.UPCOMING_VIEW_TYPE,
@@ -79,13 +82,15 @@ class UpcomingFragment : Fragment() {
                         is Result.Loading -> {
                             binding.progressBar.visibility = View.VISIBLE
                         }
+
                         is Result.Success -> {
                             binding.progressBar.visibility = View.GONE
                             upcomingAdapter.setUpcomingEvents(result.data)
                         }
+
                         is Result.Error -> {
                             binding.progressBar.visibility = View.GONE
-                            Log.e("Upcoming Fragment", "Error: ${result.error}")
+                            Toast.makeText(context, result.error, Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -99,10 +104,12 @@ class UpcomingFragment : Fragment() {
                             is Result.Loading -> {
                                 binding.progressBar.visibility = View.VISIBLE
                             }
+
                             is Result.Success -> {
                                 binding.progressBar.visibility = View.GONE
                                 upcomingAdapter.setUpcomingEvents(result.data)
                             }
+
                             is Result.Error -> {
                                 binding.progressBar.visibility = View.GONE
                                 Log.e("Upcoming Fragment", "Error: ${result.error}")
@@ -115,10 +122,12 @@ class UpcomingFragment : Fragment() {
                             is Result.Loading -> {
                                 binding.progressBar.visibility = View.VISIBLE
                             }
+
                             is Result.Success -> {
                                 binding.progressBar.visibility = View.GONE
                                 upcomingAdapter.setUpcomingEvents(result.data)
                             }
+
                             is Result.Error -> {
                                 binding.progressBar.visibility = View.GONE
                                 Log.e("Upcoming Fragment", "Error: ${result.error}")
@@ -137,49 +146,27 @@ class UpcomingFragment : Fragment() {
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                 }
+
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    Log.d("Upcoming Fragment", "Upcoming events: ${result.data}")
                     upcomingAdapter.setUpcomingEvents(result.data)
                 }
+
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
-                    Log.e("Upcoming Fragment", "Error: ${result.error}")
+                    showErrorSnackbar(result.error)
                 }
             }
         }
     }
 
-//
-//    private fun showErrorDialog(message: String) {
-//        val hasData = mainViewModel.upcomingEvents.value != null
-//
-//        val builder = AlertDialog.Builder(requireContext())
-//            .setTitle("Error")
-//            .setMessage(message)
-//            .setPositiveButton("Retry") { dialog, _ ->
-//                mainViewModel.getAllUpcomingEvents()
-//                dialog.dismiss()
-//            }
-//            .setCancelable(hasData)
-//
-//        if (hasData) {
-//            builder.setNegativeButton("Close") { dialog, _ ->
-//                dialog.dismiss()
-//            }
-//        } else {
-//            builder.setNegativeButton("Close") { _, _ ->
-//                Toast.makeText(context, "Please turn on your internet connection before closing", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//
-//        val dialog = builder.create()
-//
-//        dialog.setOnShowListener {
-//            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-//            negativeButton.isEnabled = hasData
-//        }
-//
-//        dialog.show()
-//    }
+    private fun showErrorSnackbar(errorMessage: String) {
+        view?.let { view ->
+            Snackbar.make(view, errorMessage, Snackbar.LENGTH_LONG)
+                .setAction("Retry") {
+                    observeUpcomingEvents()
+                }
+                .show()
+        }
+    }
 }

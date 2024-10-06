@@ -54,5 +54,4 @@ symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-ap
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 

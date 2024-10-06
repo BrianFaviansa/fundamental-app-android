@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
 import androidx.appcompat.widget.Toolbar
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
             SettingPreferences.getInstance(applicationContext.dataStore)
         )
     }
+    private lateinit var navController: NavController
 
     private val requestPermissionLauncher =
         registerForActivityResult(
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.bottomNavView
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
-        val navController = navHostFragment.navController
+        navController = navHostFragment.navController
 
         val appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -76,6 +78,20 @@ class MainActivity : AppCompatActivity() {
             if (isDarkModeActive) setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) else setDefaultNightMode(
                 AppCompatDelegate.MODE_NIGHT_NO
             )
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
+    @Suppress("DEPRECATION")
+    override fun onBackPressed() {
+        if(navController.currentDestination?.id == R.id.detailFragment) {
+            navController.popBackStack(R.id.navigation_home, false)
+        } else {
+            super.onBackPressed()
         }
     }
 }

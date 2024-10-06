@@ -21,6 +21,4 @@
     <string name="card_image">Card image</string>
     <string name="dark_mode">Dark Mode</string>
     <string name="daily_reminder">Daily Reminder</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
