@@ -53,5 +53,13 @@ class SettingsFragment : Fragment() {
         binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
             viewModel.saveThemeSetting(isChecked)
         }
+
+        viewModel.isReminderActive.observe(viewLifecycleOwner) { isActive ->
+            binding.switchDailyReminder.isChecked = isActive
+        }
+
+        binding.switchDailyReminder.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.setReminderState(isChecked)
+        }
     }
 }

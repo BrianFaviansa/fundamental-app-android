@@ -135,6 +135,10 @@ class EventRepository private constructor(
         eventDao.updateEvent(event)
     }
 
+    suspend fun getClosestEvent(): EventEntity? {
+        val closestEvent = eventDao.getClosestActiveEvent(System.currentTimeMillis())
+        return closestEvent
+    }
 
     companion object {
         @Volatile

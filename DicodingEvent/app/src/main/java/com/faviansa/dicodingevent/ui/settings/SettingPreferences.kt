@@ -10,17 +10,28 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-class SettingPreferences private constructor(private val dataStore: DataStore<Preferences>){
-    private val THEME_KEY = booleanPreferencesKey("theme_setting")
-    private val NOTIFICATION_KEY = booleanPreferencesKey("notification_setting")
 
-    fun getThemeSetting() : Flow<Boolean> = dataStore.data.map { preferences ->
+class SettingPreferences private constructor(private val dataStore: DataStore<Preferences>) {
+    private val THEME_KEY = booleanPreferencesKey("theme_setting")
+    private val REMINDER_KEY = booleanPreferencesKey("reminder_setting")
+
+    fun getThemeSetting(): Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[THEME_KEY] ?: false
     }
 
-    suspend fun setThemeSetting(isDarkModeActive: Boolean){
+    suspend fun setThemeSetting(isDarkModeActive: Boolean) {
         dataStore.edit { preferences ->
             preferences[THEME_KEY] = isDarkModeActive
+        }
+    }
+
+    fun getReminderSetting(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[REMINDER_KEY] ?: false
+    }
+
+    suspend fun setReminderSetting(isReminderActive: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[REMINDER_KEY] = isReminderActive
         }
     }
 
