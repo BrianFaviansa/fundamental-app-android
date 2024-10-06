@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +18,7 @@ import com.faviansa.dicodingevent.ui.ViewModelFactory
 import com.faviansa.dicodingevent.ui.adapter.ListEventAdapter
 import com.faviansa.dicodingevent.ui.settings.SettingPreferences
 import com.faviansa.dicodingevent.ui.settings.dataStore
+import kotlinx.coroutines.launch
 
 
 class FavoriteFragment : Fragment() {
@@ -57,7 +61,8 @@ class FavoriteFragment : Fragment() {
                 findNavController().navigate(action)
             },
             viewType = ListEventAdapter.FAVORITE_VIEW_TYPE,
-            viewModel = viewModel
+            viewModel = viewModel,
+            lifecycleOwner = viewLifecycleOwner
         )
 
         favoriteRv.apply {
@@ -67,8 +72,12 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun observeFavoriteEvents() {
-        viewModel.getFavoriteEvents().observe(viewLifecycleOwner) { result ->
-            favoriteAdapter.setFavoriteEvents(result)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.favoriteEvents.collect { result ->
+                    favoriteAdapter.setFavoriteEvents(result)
+                }
+            }
         }
     }
 

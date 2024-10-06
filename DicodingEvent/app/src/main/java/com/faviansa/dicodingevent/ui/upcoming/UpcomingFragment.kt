@@ -65,7 +65,8 @@ class UpcomingFragment : Fragment() {
                 findNavController().navigate(action)
             },
             viewType = ListEventAdapter.UPCOMING_VIEW_TYPE,
-            viewModel = viewModel
+            viewModel = viewModel,
+            lifecycleOwner = viewLifecycleOwner
         )
 
         upcomingRv.apply {

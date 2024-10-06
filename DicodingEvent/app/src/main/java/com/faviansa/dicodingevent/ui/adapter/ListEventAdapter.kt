@@ -5,6 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -13,12 +17,15 @@ import com.faviansa.dicodingevent.data.local.entity.EventEntity
 import com.faviansa.dicodingevent.databinding.ItemCardBinding
 import com.faviansa.dicodingevent.ui.MainViewModel
 import com.faviansa.dicodingevent.utils.DateFormat.formatCardDate
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 
 class ListEventAdapter(
     private val onClickedItem: (EventEntity) -> Unit,
     private val viewType: Int,
-    private val viewModel: MainViewModel
+    private val viewModel: MainViewModel,
+    private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<ListEventAdapter.MyListEventViewHolder>() {
     private val upcomingEvents = mutableListOf<EventEntity>()
     private val finishedEvents = mutableListOf<EventEntity>()
@@ -38,29 +45,48 @@ class ListEventAdapter(
                     .load(event.imageLogo)
                     .into(eventPhoto)
 
-                if (event.isFavorite) {
-                    btnFavorite.background =
-                        itemView.context.getDrawable(R.drawable.baseline_favorite_24)
-                } else {
-                    btnFavorite.background =
-                        itemView.context.getDrawable(R.drawable.baseline_favorite_border_24)
+                lifecycleOwner.lifecycleScope.launch {
+                    lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        viewModel.isEventFavorite(event.id).collect { isFavorite ->
+                            updateFavoriteButton(isFavorite)
+                        }
+                    }
                 }
 
                 btnFavorite.setOnClickListener {
-                    viewModel.setFavoriteEventState(event, !event.isFavorite)
-                    btnFavorite.background = if (event.isFavorite) {
-                        itemView.context.getDrawable(R.drawable.baseline_favorite_24)
-                    } else {
-                        itemView.context.getDrawable(R.drawable.baseline_favorite_border_24)
-                    }
-
-                    val toastMessage =
-                        if (event.isFavorite) "Event added to favorite" else "Event removed from favorite"
-                    Toast.makeText(itemView.context, toastMessage, Toast.LENGTH_SHORT).show()
+                    toggleFavorite(event)
                 }
 
-
                 itemView.setOnClickListener { onClickedItem(event) }
+            }
+        }
+
+        @SuppressLint("UseCompatLoadingForDrawables")
+        private fun updateFavoriteButton(isFavorite: Boolean) {
+            binding.btnFavorite.background = itemView.context.getDrawable(
+                if (isFavorite) R.drawable.baseline_favorite_24
+                else R.drawable.baseline_favorite_border_24
+            )
+        }
+
+        private fun toggleFavorite(event: EventEntity) {
+            lifecycleOwner.lifecycleScope.launch {
+                val currentFavoriteStatus = viewModel.isEventFavorite(event.id).first()
+                if (currentFavoriteStatus) {
+                    viewModel.removeFromFavorites(event.id)
+                    Toast.makeText(
+                        itemView.context,
+                        "Removed from favorites",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    viewModel.addToFavorites(event.id)
+                    Toast.makeText(
+                        itemView.context,
+                        "Added to favorites",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
@@ -129,6 +155,8 @@ class ListEventAdapter(
             return oldEventsList[oldItemPosition] == newEventsList[newItemPosition]
         }
     }
+
+
 
     companion object {
         const val UPCOMING_VIEW_TYPE = 1

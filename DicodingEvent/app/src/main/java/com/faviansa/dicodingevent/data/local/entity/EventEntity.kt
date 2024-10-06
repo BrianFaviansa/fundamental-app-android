@@ -51,7 +51,4 @@ data class EventEntity(
 
     @field:ColumnInfo(name = "isActive")
     val isActive: Boolean,
-
-    @field:ColumnInfo(name = "isFavorite")
-    var isFavorite: Boolean
 )

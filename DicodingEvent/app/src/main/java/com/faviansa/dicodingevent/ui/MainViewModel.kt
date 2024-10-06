@@ -12,7 +12,11 @@ import com.faviansa.dicodingevent.data.EventRepository
 import com.faviansa.dicodingevent.data.local.entity.EventEntity
 import com.faviansa.dicodingevent.ui.reminder.MyReminderWorker
 import com.faviansa.dicodingevent.ui.settings.SettingPreferences
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
@@ -28,12 +32,25 @@ class MainViewModel(
     fun getFinishedEvents() = eventRepository.getFinishedEvents()
     fun searchEvents(active: Int, query: String) = eventRepository.searchEvents(active, query)
     fun getEventById(id: String) = eventRepository.getEventById(id)
-    fun getFavoriteEvents() = eventRepository.getFavoriteEvents()
-    fun setFavoriteEventState(event: EventEntity, state: Boolean) {
+
+    fun addToFavorites(eventId: String) {
         viewModelScope.launch {
-            eventRepository.setFavoriteEvent(event, state)
+            eventRepository.addToFavorites(eventId)
         }
     }
+
+    fun removeFromFavorites(eventId: String) {
+        viewModelScope.launch {
+            eventRepository.removeFromFavorites(eventId)
+        }
+    }
+
+    fun isEventFavorite(eventId: String): Flow<Boolean> {
+        return eventRepository.isEventFavorite(eventId)
+    }
+
+    val favoriteEvents: StateFlow<List<EventEntity>> = eventRepository.getFavoriteEvents()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
         viewModelScope.launch {

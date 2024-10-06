@@ -64,7 +64,8 @@ class HomeFragment : Fragment() {
                 findNavController().navigate(action)
             },
             viewType = ListEventAdapter.UPCOMING_VIEW_TYPE,
-            viewModel = viewModel
+            viewModel = viewModel,
+            lifecycleOwner = viewLifecycleOwner
         )
 
         finishedAdapter = ListEventAdapter(
@@ -73,7 +74,8 @@ class HomeFragment : Fragment() {
                 findNavController().navigate(action)
             },
             viewType = ListEventAdapter.FINISHED_VIEW_TYPE,
-            viewModel = viewModel
+            viewModel = viewModel,
+            lifecycleOwner = viewLifecycleOwner
         )
 
         upcomingRv.adapter = upcomingAdapter

@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import com.faviansa.dicodingevent.data.local.entity.EventEntity
+import com.faviansa.dicodingevent.data.local.entity.FavoriteEntity
 import com.faviansa.dicodingevent.data.local.room.EventDao
 import com.faviansa.dicodingevent.data.remote.retrofit.ApiService
+import kotlinx.coroutines.flow.Flow
 
 class EventRepository private constructor(
     private val apiService: ApiService,
@@ -23,7 +25,6 @@ class EventRepository private constructor(
                     val response = apiService.getUpcomingEvents()
                     val events = response.listEvents
                     val eventList = events.map { event ->
-                        val isFavorite = eventDao.isEventFavorite(event.id.toString())
                         EventEntity(
                             event.id.toString(),
                             event.name.toString(),
@@ -40,7 +41,6 @@ class EventRepository private constructor(
                             event.endTime.toString(),
                             event.link,
                             isActive = true,
-                            isFavorite
                         )
                     }
                     eventDao.deleteUpcomingEvents()
@@ -66,7 +66,6 @@ class EventRepository private constructor(
                     val response = apiService.getFinishedEvents()
                     val events = response.listEvents
                     val eventList = events.map { event ->
-                        val isFavorite = eventDao.isEventFavorite(event.id.toString())
                         EventEntity(
                             event.id.toString(),
                             event.name.toString(),
@@ -83,7 +82,6 @@ class EventRepository private constructor(
                             event.endTime.toString(),
                             event.link,
                             isActive = false,
-                            isFavorite
                         )
                     }
                     eventDao.deleteFinishedEvents()
@@ -128,11 +126,20 @@ class EventRepository private constructor(
         }
     }
 
-    fun getFavoriteEvents(): LiveData<List<EventEntity>> = eventDao.getFavoriteEvents()
+    suspend fun addToFavorites(eventId: String) {
+        eventDao.insertFavorite(FavoriteEntity(eventId))
+    }
 
-    suspend fun setFavoriteEvent(event: EventEntity, state: Boolean) {
-        event.isFavorite = state
-        eventDao.updateEvent(event)
+    suspend fun removeFromFavorites(eventId: String) {
+        eventDao.deleteFavorite(FavoriteEntity(eventId))
+    }
+
+    fun isEventFavorite(eventId: String): Flow<Boolean> {
+        return eventDao.isEventFavorite(eventId)
+    }
+
+    fun getFavoriteEvents(): Flow<List<EventEntity>> {
+        return eventDao.getFavoriteEvents()
     }
 
     suspend fun getClosestEvent(): EventEntity? {

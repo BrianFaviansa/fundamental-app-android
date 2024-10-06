@@ -64,7 +64,8 @@ class FinishedFragment : Fragment() {
                 findNavController().navigate(action)
             },
             viewType = ListEventAdapter.FINISHED_VIEW_TYPE,
-            viewModel = viewModel
+            viewModel = viewModel,
+            lifecycleOwner = viewLifecycleOwner
         )
 
         finishedRv.apply {
